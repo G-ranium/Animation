@@ -76,3 +76,29 @@ scale -ws -r 1 1 0.5 ;
 rotate -r -p -0.5cm 9.5cm 1.075cm -os -fo 0 -25 0 ;
 rotate -r -p -0.5cm 9.5cm 1.075cm -os -fo -10 0 0 ;
 hyperShade -assign Coal;
+
+// create material for arms
+shadingNode -asShader lambert -name "Stick";
+setAttr "Stick.color" -type double3 0.125 0.0445917 0 ;
+
+// right arm
+polyCylinder -r 0.15 -h 3.5 -sx 13 -sy 1 -sz 1 -ax 0 1 0 -rcp 0 -cuv 3 -ch 1;
+rotate -r -p 0cm 0cm 0cm -os -fo 0 0 70 ;
+move -r -3 7.5 0 ;
+hyperShade -assign Stick;
+
+polyCylinder -r 0.15 -h 1.25 -sx 13 -sy 1 -sz 1 -ax 0 1 0 -rcp 0 -cuv 3 -ch 1;
+rotate -r -p 0cm 0cm 0cm -os -fo 0 0 100 ;
+move -r -4 7.5 0 ;
+hyperShade -assign Stick;
+
+// left arm
+polyCylinder -r 0.15 -h 3.5 -sx 13 -sy 1 -sz 1 -ax 0 1 0 -rcp 0 -cuv 3 -ch 1;
+rotate -r -p 0cm 0cm 0cm -os -fo 0 0 -70 ;
+move -r 3 7.5 0 ;
+hyperShade -assign Stick;
+
+polyCylinder -r 0.15 -height 1.25 -sx 13 -sy 1 -sz 1 -ax 0 1 0 -rcp 0 -cuv 3 -ch 1;
+rotate -r -p 0cm 0cm 0cm -os -fo 0 0 -100 ;
+move -r 4 7.5 0 ;
+hyperShade -assign Stick;
