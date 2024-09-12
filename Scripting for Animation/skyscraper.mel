@@ -1,17 +1,20 @@
-int $floors = 3;
-float $baseSize = 5;
-float $height = 3;
-float $pos[] = {0, 0, 0};
+int $floors = 3; // Change how many stories the skyscraper will be
+float $baseSize = 5; // change how big the base will be, windows will scale up
+float $height = 3; // change how tall the base will be, windows scale up here too
+float $pos[] = {0, 0, 0}; // if you want to manually put in position comment out lines 9-10
 string $selection;
 string $temp[];
 
 proc generateSkyScraper(int $floors, float $baseSize, float $height, float $pos[], string $selection, string $temp[]) {
+    // Generate random position for skyscraper
     $pos[0] = `rand -10 10`;
     $pos[2] = `rand -10 10`;
+
     // Create first window
     $temp = `polyCube -width ($baseSize/6) -height ($height*0.75) -depth 0.1 -sx 1 -sy 1 -sz 1 -ax 0 1 0 -cuv 4 -ch 1 -name "window"`;
     $selection = $temp[0];
     xform -worldSpace -translation (($baseSize*0.375*-1)) ($height/2) ($baseSize*0.51) $selection;
+
     // Duplicate that window for the entire front side
     for( $i=0; $i<3; ++$i) {
         $temp = `duplicate -returnRootsOnly $selection`;
@@ -56,8 +59,14 @@ proc generateSkyScraper(int $floors, float $baseSize, float $height, float $pos[
     // Create group for entire building
     select -r "floor*";
     group -name "building";
-
+    
+    //move skyscraper to generated position
     xform -worldSpace -translation $pos[0] $pos[1] $pos[2];
 }
 
+/* 
+function to generate skyscraper, right now you can't do more than one or it ruins things
+that has to do with the names and how the program selects objects, I would have to find a way
+to either change the name every single time or select without using the names
+ */
 generateSkyScraper($floors, $baseSize, $height, $pos, $selection, $temp);
