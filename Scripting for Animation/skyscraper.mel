@@ -1,0 +1,63 @@
+int $floors = 3;
+float $baseSize = 5;
+float $height = 3;
+float $pos[] = {0, 0, 0};
+string $selection;
+string $temp[];
+
+proc generateSkyScraper(int $floors, float $baseSize, float $height, float $pos[], string $selection, string $temp[]) {
+    $pos[0] = `rand -10 10`;
+    $pos[2] = `rand -10 10`;
+    // Create first window
+    $temp = `polyCube -width ($baseSize/6) -height ($height*0.75) -depth 0.1 -sx 1 -sy 1 -sz 1 -ax 0 1 0 -cuv 4 -ch 1 -name "window"`;
+    $selection = $temp[0];
+    xform -worldSpace -translation (($baseSize*0.375*-1)) ($height/2) ($baseSize*0.51) $selection;
+    // Duplicate that window for the entire front side
+    for( $i=0; $i<3; ++$i) {
+        $temp = `duplicate -returnRootsOnly $selection`;
+        $selection = $temp[0];
+        xform -relative -objectSpace -translation ($baseSize*0.25) 0 0 $selection;
+    }
+    // Group windows
+    select -r "window*";
+    doGroup 0 1 1; // I cannot possibly fathom why changing this to group breaks it...
+    rename group1 "windows";
+
+    // Duplicate them for other side
+    $temp = `duplicate -returnRootsOnly`;
+    $selection = $temp[0];
+    xform -relative -objectSpace -translation 0 0 (($baseSize*1.025*-1)) $selection;
+
+    // Duplicate right and lift side that haven't been done yet
+    for( $i=90; $i>-91; $i-=90){
+        $temp = `duplicate -returnRootsOnly`;
+        $selection = $temp[0];
+        xform -worldSpace -translation 0 0 0 $selection;
+        xform -worldSpace -rotation 0 $i 0 $selection;
+    }
+
+    // Create base for the building
+    $temp = `polyCube -width $baseSize -height $height -depth $baseSize -sx 1 -sy 1 -sz 1 -ax 0 1 0 -cuv 4 -ch 1 -name "base"`;
+    $selection = $temp[0];
+    xform -worldSpace -translation 0 ($height/2) 0 $selection;
+
+    // Create group for entire first floor
+    select -r "windows*";
+    select -add "base*";
+    group -name "floor1";
+
+    // Duplicate floors for however many stories the building will be
+    for( $i=0; $i<$floors; ++$i) {
+        $temp = `duplicate -returnRootsOnly`;
+        $selection = $temp[0];
+        xform -relative -objectSpace -translation 0 ($height) 0 $selection;
+    }
+
+    // Create group for entire building
+    select -r "floor*";
+    group -name "building";
+
+    xform -worldSpace -translation $pos[0] $pos[1] $pos[2];
+}
+
+generateSkyScraper($floors, $baseSize, $height, $pos, $selection, $temp);
