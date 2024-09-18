@@ -1,0 +1,24 @@
+proc GenerateStaircase(int $stairNum, float $stairWidth, float $stairHeight, float $stairDepth, float $offset, float $rot)
+{
+    string $temp[];
+    string $selection;
+    $temp = `polyCube -width $stairWidth -height $stairHeight -depth $stairDepth -sx 1 -sy 1 -sz 1 -ax 0 1 0 -cuv 4 -ch 1 -name "stair1"`;
+    $selection = $temp[0];
+    move -r ($stairWidth/2) 0 0 stair1.scalePivot stair1.rotatePivot ;
+    xform -worldSpace -translation 0 ($stairHeight/2) 0 $selection;
+    select -r stair1.f[5];
+    scale -ws -r -p -1.5cm 0.5cm 0cm 1 1 1.5;
+    select -r stair1;
+    
+    for ($i=0;$i<$stairNum;$i++)
+    {
+        $temp = `duplicate -returnRootsOnly`;
+        $selection = $temp[0];
+        xform -relative -objectSpace -translation ($stairWidth * -0.03) ($stairHeight) $offset -rotation 0 $rot 0 $selection;
+    }
+    select -replace "stair*";
+    group -name "staircase";
+    
+}
+
+GenerateStaircase(2, 3, 1, 1, 1, 10);
