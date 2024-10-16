@@ -1,5 +1,7 @@
+// Procedure to randomly place duplicated objects in a 3D space
 global proc RandomPlacement()
 {
+    // Retrieve the option variable names for min/max values along the x, y, and z axes
     string $xMinField = `optionVar -q "xMinField"`;
     string $xMaxField = `optionVar -q "xMaxField"`;
 
@@ -9,78 +11,103 @@ global proc RandomPlacement()
     string $zMinField = `optionVar -q "zMinField"`;
     string $zMaxField = `optionVar -q "zMaxField"`;
 
+    // Retrieve the option variable name for the number of iterations
     string $iterationsField = `optionVar -q "iterationsField"`;
 
+    // Get the actual float values for the min/max positions along the x-axis
     float $xMin = float(`floatField -q -value $xMinField`);
     float $xMax = float(`floatField -q -value $xMaxField`);
 
+    // Get the actual float values for the min/max positions along the y-axis
     float $yMin = float(`floatField -q -value $yMinField`);
     float $yMax = float(`floatField -q -value $yMaxField`);
 
+    // Get the actual float values for the min/max positions along the z-axis
     float $zMin = float(`floatField -q -value $zMinField`);
     float $zMax = float(`floatField -q -value $zMaxField`);
 
+    // Get the number of iterations (how many duplicates to create)
     int $iterations = int(`intField -q -value $iterationsField`);
 
+    // Get the list of currently selected objects
     string $sels[] = `ls -sl`;
-    for($i=0; $i<size($sels);$i++)
+    // Loop through each selected object
+    for($i = 0; $i < size($sels); $i++)
     {
-        for($j=0;$j<$iterations;$j++)
+        // Create duplicates based on the specified number of iterations
+        for($j = 0; $j < $iterations; $j++)
         {
+            // Duplicate the current object and store the result in a temporary array
             string $temp[] = `duplicate($sels[$i])`;
+
+            // Generate random positions within the specified ranges for x, y, and z
             float $xLoc = `rand $xMin $xMax`;
             float $yLoc = `rand $yMin $yMax`;
             float $zLoc = `rand $zMin $zMax`;
 
+            // Move the duplicated object to the generated random position
             xform -ws -translation $xLoc $yLoc $zLoc $temp[0];
         }
     }
 }
 
+// Procedure to create the user interface for the script
 global proc UserInterface()
 {
     string $mWindow = "Random_Generator_UI";
+    // Check if the window already exists; if it does, delete it
     if (`window -ex $mWindow`)
     {
         deleteUI $mWindow;
     }
 
+    // Create a new window with a title, size, and adjustable size properties
     $mWindow = `window -title "Random Generator"
                               -sizeable 1
                               -width 700
                               -height 400
                               $mWindow`;
 
+    // Create a column layout to hold the UI elements
     string $mColumn = `columnLayout -rs 10 -adjustableColumn 1 -parent $mWindow`;
 
+    // Add some instructional text
     text -parent $mColumn "Enter min/max values for xyz and # of iterations";
 
+    // Create rows for user input fields
     string $firRow = `rowLayout -numberOfColumns 4 -parent $mColumn`;
     string $secRow = `rowLayout -numberOfColumns 4 -parent $mColumn`;
     string $thRow = `rowLayout -numberOfColumns 4 -parent $mColumn`;
     string $foRow = `rowLayout -numberOfColumns 2 -parent $mColumn`;
 
+    // Add input fields for X min and max values
     text -parent $firRow "X Min";
-    optionVar -stringValue "xMinField" `floatField -parent $firRow`;
+    optionVar -stringValue "xMinField" `floatField -value (-10) -parent $firRow`;
     text -parent $firRow "X Max";
-    optionVar -stringValue "xMaxField" `floatField -parent $firRow`;
+    optionVar -stringValue "xMaxField" `floatField -value 10 -parent $firRow`;
 
+    // Add input fields for Y min and max values
     text -parent $secRow "Y Min";
-    optionVar -stringValue "yMinField" `floatField -parent $secRow`;
+    optionVar -stringValue "yMinField" `floatField -value 0 -parent $secRow`;
     text -parent $secRow "Y Max";
-    optionVar -stringValue "yMaxField" `floatField -parent $secRow`;
+    optionVar -stringValue "yMaxField" `floatField -value 10 -parent $secRow`;
 
+    // Add input fields for Z min and max values
     text -parent $thRow "Z Min";
-    optionVar -stringValue "zMinField" `floatField -parent $thRow`;
+    optionVar -stringValue "zMinField" `floatField -value (-10) -parent $thRow`;
     text -parent $thRow "Z Max";
-    optionVar -stringValue "zMaxField" `floatField -parent $thRow`;
+    optionVar -stringValue "zMaxField" `floatField -value 10 -parent $thRow`;
 
+    // Add an input field for the number of iterations
     text -parent $foRow "Iterations";
-    optionVar -stringValue "iterationsField" `intField -parent $foRow`;
+    optionVar -stringValue "iterationsField" `intField -value 1 -parent $foRow`;
 
+    // Add a button that runs the RandomPlacement procedure when clicked
     button -parent $mColumn -label "Go!" -command "RandomPlacement";
 
+    // Display the window
     showWindow;
 }
 
+// Call the UserInterface procedure to create and display the UI when the script runs
 UserInterface();
