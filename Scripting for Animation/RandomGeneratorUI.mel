@@ -1,0 +1,42 @@
+proc RandomPlacement(int $iterations, float $xMin, float $xMax, float $yMin, float $yMax, float $zMin, float $zMax)
+{
+    string $sels[] = `ls -sl`;
+    for($i=0; $i<size($sels);$i++)
+    {
+        for($j=0;$j<$iterations;$j++)
+        {
+            string $temp[] = `duplicate($sels[$i])`;
+            float $xLoc = `rand $xMin $xMax`;
+            float $yLoc = `rand $yMin $yMax`;
+            float $zLoc = `rand $zMin $zMax`;
+
+            xform -ws -translation $xLoc $yLoc $zLoc $temp[0];
+        }
+    }
+}
+
+RandomPlacement(25,-10,10,-10,10,-10,10);
+
+global proc UserInterface()
+{
+    string $mWindow = "Random_Generator_UI";
+    if (`window -ex $mWindow`)
+    {
+        deleteUI $mWindow;
+    }
+
+    $mWindow = `window -title "Random Generator"
+                              -sizeable 1
+                              -width 700
+                              -height 400
+                              $mWindow`;
+    string $mColumn = `columnLayout -rs 50 -adjustableColumn 1 -parent $mWindow`;
+    string $fRow = `rowLayout -numberOfColumns 2 -parent $mColumn`;
+    floatField -parent $fRow;
+    floatField -parent $fRow;
+    button -parent $mColumn;
+    button -parent $mColumn;
+
+    showWindow;
+}
+UserInterface();
