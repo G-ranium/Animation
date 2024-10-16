@@ -1,5 +1,27 @@
-proc RandomPlacement(int $iterations, float $xMin, float $xMax, float $yMin, float $yMax, float $zMin, float $zMax)
+global proc RandomPlacement()
 {
+    string $xMinField = `optionVar -q "xMinField"`;
+    string $xMaxField = `optionVar -q "xMaxField"`;
+
+    string $yMinField = `optionVar -q "yMinField"`;
+    string $yMaxField = `optionVar -q "yMaxField"`;
+
+    string $zMinField = `optionVar -q "zMinField"`;
+    string $zMaxField = `optionVar -q "zMaxField"`;
+
+    string $iterationsField = `optionVar -q "iterationsField"`;
+
+    float $xMin = float(`floatField -q -value $xMinField`);
+    float $xMax = float(`floatField -q -value $xMaxField`);
+
+    float $yMin = float(`floatField -q -value $yMinField`);
+    float $yMax = float(`floatField -q -value $yMaxField`);
+
+    float $zMin = float(`floatField -q -value $zMinField`);
+    float $zMax = float(`floatField -q -value $zMaxField`);
+
+    int $iterations = int(`intField -q -value $iterationsField`);
+
     string $sels[] = `ls -sl`;
     for($i=0; $i<size($sels);$i++)
     {
@@ -15,8 +37,6 @@ proc RandomPlacement(int $iterations, float $xMin, float $xMax, float $yMin, flo
     }
 }
 
-RandomPlacement(25,-10,10,-10,10,-10,10);
-
 global proc UserInterface()
 {
     string $mWindow = "Random_Generator_UI";
@@ -30,13 +50,37 @@ global proc UserInterface()
                               -width 700
                               -height 400
                               $mWindow`;
-    string $mColumn = `columnLayout -rs 50 -adjustableColumn 1 -parent $mWindow`;
-    string $fRow = `rowLayout -numberOfColumns 2 -parent $mColumn`;
-    floatField -parent $fRow;
-    floatField -parent $fRow;
-    button -parent $mColumn;
-    button -parent $mColumn;
+
+    string $mColumn = `columnLayout -rs 10 -adjustableColumn 1 -parent $mWindow`;
+
+    text -parent $mColumn "Enter min/max values for xyz and # of iterations";
+
+    string $firRow = `rowLayout -numberOfColumns 4 -parent $mColumn`;
+    string $secRow = `rowLayout -numberOfColumns 4 -parent $mColumn`;
+    string $thRow = `rowLayout -numberOfColumns 4 -parent $mColumn`;
+    string $foRow = `rowLayout -numberOfColumns 2 -parent $mColumn`;
+
+    text -parent $firRow "X Min";
+    optionVar -stringValue "xMinField" `floatField -parent $firRow`;
+    text -parent $firRow "X Max";
+    optionVar -stringValue "xMaxField" `floatField -parent $firRow`;
+
+    text -parent $secRow "Y Min";
+    optionVar -stringValue "yMinField" `floatField -parent $secRow`;
+    text -parent $secRow "Y Max";
+    optionVar -stringValue "yMaxField" `floatField -parent $secRow`;
+
+    text -parent $thRow "Z Min";
+    optionVar -stringValue "zMinField" `floatField -parent $thRow`;
+    text -parent $thRow "Z Max";
+    optionVar -stringValue "zMaxField" `floatField -parent $thRow`;
+
+    text -parent $foRow "Iterations";
+    optionVar -stringValue "iterationsField" `intField -parent $foRow`;
+
+    button -parent $mColumn -label "Go!" -command "RandomPlacement";
 
     showWindow;
 }
+
 UserInterface();
